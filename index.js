@@ -12,8 +12,8 @@ $(document).ready(() => {
   const $username = $(`<span class="username">@${tweet.user}</span>`).on('click', () => {
     showUserTimeLine(tweet.user);
   });
-  const $message = $('<span class="message"></span>').text(`:${tweet.message}`);
-  const $timestamp =$('<span class="timestamp"></span>').text(`(${formatTimestamp(tweet.created_at)})`); // format time stamp
+  const $message = $('<span class="message"></span>').text(`: ${tweet.message}`);
+  const $timestamp =$('<span class="timestamp"></span>').text(` (${formatTimestamp(tweet.created_at)})`); // format time stamp
 
   $tweet.append($username).append($message).append($timestamp); // display time stamp
 
@@ -47,17 +47,17 @@ const showUserTimeLine = (username) => {
   streams.users[username].forEach((tweet) => {
     const $tweet = createTweetElement(tweet);
     $tweetContainer.append($tweet);
-  })
-}
+  });
+
 
   // form
 
   const $newTweetForm = $('<form id="new-tweet-form"></form>');
-  const $newTweetInput = $('<input type="text" id="new-tweet-input" placeholder="Compose new tweet...">');
+  const $newTweetInput = $('<input type="text" id="new-tweet-input" placeholder="Write Something...">');
   const $submitButton = $('<button type="submit">TWEET</button>');
 
   $newTweetForm.append($newTweetInput).append($submitButton);
-  $body.append($newTweetForm);
+  $tweetContainer.append($newTweetForm);
   
   // new tweet event listener
   $newTweetForm.on('submit', (event) => {
@@ -75,10 +75,13 @@ const showUserTimeLine = (username) => {
       created_at: new Date()
     };
     streams.home.push(newTweet);
+    if (!streams.users['YOU']) {
+      streams.users['YOU'] = [];
+    }
     streams.users['YOU'].push(newTweet);
     showNewTweets();
   };
-
+};
 /*
   const $tweets = streams.home.map((tweet) => {
     const $tweet = $('<div></div>');
