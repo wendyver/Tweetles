@@ -69,8 +69,14 @@ const formatTimestamp = (timestamp) => {
  const showNewTweets = () => {
   $tweetContainer.empty(); // clear existing tweets
 
+  // gather all tweets from all users
+  const allTweets = [];
+  Object.values(streams.users).forEach((userTweets) => {
+    allTweets.push(...userTweets);
+  });
+
  //sort streams.home by created_at in descending order, newest first
- const sortedTweets = streams.home.slice().sort((a, b) => b.created_at - a.created_at);
+ const sortedTweets = allTweets.sort((a, b) => a.created_at - b.created_at);
 
  // display sorted tweets
  sortedTweets.forEach((tweet) => {
