@@ -6,6 +6,11 @@ $(document).ready(() => {
   $body.append($tweetContainer);
  // $body.html(''); // => clears body (or any tag)
 
+ // moment function
+const formatTimestamp = (timestamp) => {
+  return moment(timestamp).fromNow();
+}
+
  //function creates a tweet element
  const createTweetElement = (tweet) => {
   const $tweet = $('<div class="tweet"></div>');
@@ -19,19 +24,57 @@ $(document).ready(() => {
 
   return $tweet;
  };
-// moment function
-const formatTimestamp = (timestamp) => {
-  return moment(timestamp).fromNow();
-}
+
 
  // function for showing new tweets
  const showNewTweets = () => {
-  $tweetContainer.empty();
+  $tweetContainer.find('.tweet').remove();
   streams.home.forEach((tweet) => {
     const $tweet = createTweetElement(tweet);
-    $tweetContainer.prepend($tweet); // Prepend new tweets to the top
+    $tweetContainer.append($tweet); // Append new tweets to the top
   });
  };
+
+ // form
+
+ const $newTweetForm = $('<form id="new-tweet-form"></form>');
+ const $newTweetInput = $('<input type="text" id="new-tweet-input" placeholder="Write Something...">');
+ const $submitButton = $('<button type="submit">TWEET</button>');
+
+ $newTweetForm.append($newTweetInput).append($submitButton);
+ $tweetContainer.append($newTweetForm);
+
+ // new tweet event listener
+ $newTweetForm.on('submit', (event) => {
+  event.preventDefault();
+  const newTweetText = $newTweetInput.val();
+  addNewTweet(newTweetText);
+  $newTweetInput.val('') // clear input after submitting
+});
+
+//add new tweets to streams
+const addNewTweet = (text) => {
+  const newTweet = {
+    user: "YOU",
+    message: text,
+    created_at: new Date()
+  };
+  streams.home.push(newTweet);
+  if (!streams.users['YOU']) {
+    streams.users['YOU'] = [];
+  }
+  streams.users['YOU'].push(newTweet);
+  showNewTweets();
+};
+
+// user timeline function
+const showUserTimeLine = (username) => {
+  $tweetContainer.find('.tweet').remove();
+  streams.users[username].forEach((tweet) => {
+    const $tweet = createTweetElement(tweet);
+    $tweetContainer.append($tweet);
+  });
+};
 
  // first new tweet display
  showNewTweets();
@@ -41,47 +84,33 @@ const formatTimestamp = (timestamp) => {
   showNewTweets();
  }, 7000); // updates every 7 seconds
 
-// user timeline function
-const showUserTimeLine = (username) => {
-  $tweetContainer.empty();
-  streams.users[username].forEach((tweet) => {
-    const $tweet = createTweetElement(tweet);
-    $tweetContainer.append($tweet);
-  });
+const style = `
+ #new-tweet-form {
+  position: fixed;
+  top: 3%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  background: green;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+ }
+  #tweet-container {
+  width: 100%;
+  max-width: 600px;
+  margin 0 auto;
+  padding-top: 60px;
+  }
+`;
+$('<style>').text(style).appendTo('head');
 
 
-  // form
-
-  const $newTweetForm = $('<form id="new-tweet-form"></form>');
-  const $newTweetInput = $('<input type="text" id="new-tweet-input" placeholder="Write Something...">');
-  const $submitButton = $('<button type="submit">TWEET</button>');
-
-  $newTweetForm.append($newTweetInput).append($submitButton);
-  $tweetContainer.append($newTweetForm);
   
-  // new tweet event listener
-  $newTweetForm.on('submit', (event) => {
-    event.preventDefault();
-    const newTweetText = $newTweetInput.val();
-    addNewTweet(newTweetText);
-    $newTweetInput.val('') // clear input after submitting
-  });
+  
 
-  //add new tweets to streams
-  const addNewTweet = (text) => {
-    const newTweet = {
-      user: "YOU",
-      message: text,
-      created_at: new Date()
-    };
-    streams.home.push(newTweet);
-    if (!streams.users['YOU']) {
-      streams.users['YOU'] = [];
-    }
-    streams.users['YOU'].push(newTweet);
-    showNewTweets();
-  };
-};
+  
+});
 /*
   const $tweets = streams.home.map((tweet) => {
     const $tweet = $('<div></div>');
@@ -93,6 +122,6 @@ const showUserTimeLine = (username) => {
   });
   $body.append($tweets);
 */
-});
+
 
 
