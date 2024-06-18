@@ -68,18 +68,15 @@ const formatTimestamp = (timestamp) => {
 // show new tweets function
  const showNewTweets = () => {
   $tweetContainer.empty(); // clear existing tweets
-  /*
-  // get new tweets since the last displayed index
-  const newTweets = streams.home.slice(lastDisplayedTweetIndex);
-// update lastDTI to the latest tweet
-  lastDisplayedTweetIndex = streams.home.length;
-*/
-  //prepend new tweets to the top of the tweet container
- // newTweets.reverse().forEach((tweet) => {
-  streams.home.forEach((tweet) => {
-    const $tweet = createTweetElement(tweet);
-    $tweetContainer.prepend($tweet); // prepend new tweet to the top
-  });
+
+ //sort streams.home by created_at in descending order, newest first
+ const sortedTweets = streams.home.slice().sort((a, b) => b.created_at - a.created_at);
+
+ // display sorted tweets
+ sortedTweets.forEach((tweet) => {
+  const $tweet = createTweetElement(tweet);
+  $tweetContainer.prepend($tweet); //prepend tweets to the top
+ });
 };
 
   //$tweetContainer.find('.tweet').remove();
@@ -99,18 +96,17 @@ const addNewTweet = (text) => {
   };
   streams.home.unshift(newTweet); // add new tweets to the beginning of streams.home
 
+  // add new tweets to the users stream
   if (!streams.users['YOU']) {
     streams.users['YOU'] = [];
   }
   streams.users['YOU'].push(newTweet);
 
- // show the new tweet immediately at the top
- const $tweet = createTweetElement(newTweet);
- $tweetContainer.prepend($tweet);
+ // show the updated tweets
+ showNewTweets();
 
+ // clear input field after submitting tweet
  $newTweetInput.val('');
-
- // showNewTweets(); // show the new tweet immediately
 };
 
  // user timeline function
